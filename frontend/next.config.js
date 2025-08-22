@@ -1,15 +1,17 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    turbo: {
-      rules: {
-        "*.svg": {
-          loaders: ["@svgr/webpack"],
-          as: "*.js",
-        },
-      },
-    },
-  },
+  //   experimental: {
+  //     allowedDevOrigins: ["192.168.56.1"],
+  //     turbo: {
+  //       rules: {
+  //         "*.svg": {
+  //           loaders: ["@svgr/webpack"],
+  //           as: "*.js",
+  //         },
+  //       },
+  //     },
+  //   },
+  allowedDevOrigins: ["192.168.56.1"],
   images: {
     domains: [
       "localhost",
