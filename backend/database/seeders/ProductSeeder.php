@@ -2,13 +2,14 @@
 
 namespace Database\Seeders;
 
+use Illuminate\Support\Str;
 use App\Models\Product;
 use App\Models\ProductImage;
 use App\Models\ProductVariant;
 use App\Models\Inventory;
 use App\Models\Category;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Str;
+
 
 class ProductSeeder extends Seeder
 {

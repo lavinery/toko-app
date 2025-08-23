@@ -1,6 +1,11 @@
 <?php
+// 1. Update app/DTOs/ProductDTO.php
 
 namespace App\DTOs;
+
+use Illuminate\Support\Str;
+
+// Add this import
 
 class ProductDTO
 {
@@ -26,7 +31,7 @@ class ProductDTO
     {
         return new self(
             name: $data['name'],
-            slug: $data['slug'] ?? \Str::slug($data['name']),
+            slug: $data['slug'] ?? Str::slug($data['name']), // Now Str is properly imported
             sku: $data['sku'],
             description: $data['description'] ?? null,
             shortDescription: $data['short_description'] ?? null,
