@@ -4,6 +4,7 @@ namespace App\Http\Requests\Api\V1\Product;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use App\Models\Product;
 
 class StoreProductRequest extends FormRequest
 {
