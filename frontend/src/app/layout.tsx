@@ -22,7 +22,6 @@ export default function RootLayout({
     <html lang="id">
          <head>
         {/* Temporary CDN untuk debugging */}
-        <script src="https://cdn.tailwindcss.com"></script>
       </head>
       <body className={inter.className}>
         <Providers>

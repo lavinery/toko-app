@@ -4,11 +4,12 @@ export const APP_NAME = process.env.NEXT_PUBLIC_APP_NAME || 'Toko Online';
 export const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
+// src/lib/constants.ts - UPDATE ROUTES
 export const ROUTES = {
   HOME: '/',
-  PRODUCTS: '/produk',
+  PRODUCTS: '/product', // Changed from '/produk' to match your page structure
   CATEGORIES: '/kategori',
-  CART: '/keranjang',
+  CART: '/cart', // Changed from '/keranjang'
   CHECKOUT: '/checkout',
   LOGIN: '/login',
   REGISTER: '/register',
