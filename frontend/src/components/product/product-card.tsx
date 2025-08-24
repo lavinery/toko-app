@@ -64,13 +64,23 @@ export function ProductCard({ product, className }: ProductCardProps) {
         <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200">
           {/* Product Image with Placeholder */}
           <div className="w-full h-full bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 flex items-center justify-center relative">
-            <div className="text-6xl opacity-40">
-              {product.name.includes('iPhone') && '📱'}
-              {product.name.includes('Samsung') && '📱'}
-              {product.name.includes('MacBook') && '💻'}
-              {product.name.includes('AirPods') && '🎧'}
-              {!['iPhone', 'Samsung', 'MacBook', 'AirPods'].some(keyword => product.name.includes(keyword)) && '📦'}
-            </div>
+            {product.primary_image?.url ? (
+              <Image
+                src={product.primary_image.url}
+                alt={product.primary_image.alt_text || product.name}
+                width={300}
+                height={300}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="text-6xl opacity-40">
+                {product.name.includes('iPhone') && '📱'}
+                {product.name.includes('Samsung') && '📱'}
+                {product.name.includes('MacBook') && '💻'}
+                {product.name.includes('AirPods') && '🎧'}
+                {!['iPhone', 'Samsung', 'MacBook', 'AirPods'].some(keyword => product.name.includes(keyword)) && '📦'}
+              </div>
+            )}
             
             {/* Overlay Gradient */}
             <div className={`absolute inset-0 bg-gradient-to-t from-black/10 to-transparent transition-opacity duration-300 ${

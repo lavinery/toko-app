@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 
 interface ProductReviewsProps {
-  productId: number;
+  slug: string;
 }
 
 // Mock data - replace with actual API calls
@@ -34,7 +34,7 @@ const mockReviews = [
   },
 ];
 
-export function ProductReviews({ productId }: ProductReviewsProps) {
+export function ProductReviews({ slug }: ProductReviewsProps) {
   const [reviews] = useState(mockReviews);
   const [sortBy, setSortBy] = useState('newest');
 

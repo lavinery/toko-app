@@ -3,6 +3,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import { useQuery } from '@tanstack/react-query';
 import { 
   Heart, 
   Share2, 
@@ -18,27 +19,55 @@ import { Product } from '@/types/product';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
+import { Loading } from '@/components/ui/loading';
 import { useCart } from '@/hooks/use-cart';
 import { useAuth } from '@/hooks/use-auth';
 import { formatPrice } from '@/lib/utils';
-import { ROUTES } from '@/lib/constants';
+import { ROUTES, API_ENDPOINTS } from '@/lib/constants';
+import api from '@/lib/api';
 import toast from 'react-hot-toast';
 
 interface ProductDetailProps {
-  product: Product;
+  slug: string;
 }
 
-export function ProductDetail({ product }: ProductDetailProps) {
+export function ProductDetail({ slug }: ProductDetailProps) {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
-  const [selectedVariant, setSelectedVariant] = useState(
-    product.variants?.[0]?.id || null
-  );
+  const [selectedVariant, setSelectedVariant] = useState<number | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [isWishlisted, setIsWishlisted] = useState(false);
   
   const { addItem } = useCart();
   const { isAuthenticated } = useAuth();
+
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['product', slug],
+    queryFn: () => api.get<{ data: Product }>(API_ENDPOINTS.PRODUCTS.DETAIL(slug)),
+  });
+
+  if (isLoading) {
+    return <Loading className="min-h-screen" text="Memuat detail produk..." />;
+  }
+
+  if (error || !data?.data) {
+    return (
+      <div className="text-center py-12">
+        <h1 className="text-2xl font-bold text-gray-900 mb-4">Produk Tidak Ditemukan</h1>
+        <p className="text-gray-600 mb-8">Produk yang Anda cari tidak tersedia</p>
+        <Button asChild>
+          <a href="/product">Kembali ke Produk</a>
+        </Button>
+      </div>
+    );
+  }
+
+  const product = data.data;
+
+  // Set default variant if exists
+  if (product.variants?.length && !selectedVariant) {
+    setSelectedVariant(product.variants[0].id);
+  }
 
   const selectedVariantData = product.variants?.find(v => v.id === selectedVariant);
   const finalPrice = selectedVariantData 
@@ -111,14 +140,20 @@ export function ProductDetail({ product }: ProductDetailProps) {
       <div className="space-y-4">
         {/* Main Image */}
         <div className="aspect-square bg-white rounded-lg border overflow-hidden">
-          <Image
-            src={product.images[selectedImageIndex]?.url || '/images/placeholder.jpg'}
-            alt={product.images[selectedImageIndex]?.alt_text || product.name}
-            width={600}
-            height={600}
-            className="w-full h-full object-cover"
-            priority
-          />
+          {product.images[selectedImageIndex]?.url ? (
+            <Image
+              src={product.images[selectedImageIndex].url}
+              alt={product.images[selectedImageIndex].alt_text || product.name}
+              width={600}
+              height={600}
+              className="w-full h-full object-cover"
+              priority
+            />
+          ) : (
+            <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+              <div className="text-8xl opacity-30">📦</div>
+            </div>
+          )}
         </div>
 
         {/* Thumbnail Images */}
@@ -134,13 +169,19 @@ export function ProductDetail({ product }: ProductDetailProps) {
                     : 'border-gray-200 hover:border-gray-300'
                 }`}
               >
-                <Image
-                  src={image.url}
-                  alt={image.alt_text || product.name}
-                  width={150}
-                  height={150}
-                  className="w-full h-full object-cover"
-                />
+                {image.url ? (
+                  <Image
+                    src={image.url}
+                    alt={image.alt_text || product.name}
+                    width={150}
+                    height={150}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+                    <span className="text-2xl opacity-50">📦</span>
+                  </div>
+                )}
               </button>
             ))}
           </div>
@@ -393,4 +434,5 @@ export function ProductDetail({ product }: ProductDetailProps) {
         )}
       </div>
     </div>
- 
+  );
+}

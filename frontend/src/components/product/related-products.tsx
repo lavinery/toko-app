@@ -9,18 +9,16 @@ import { Product } from '@/types/product';
 import api from '@/lib/api';
 
 interface RelatedProductsProps {
-  productId: number;
-  categoryId?: number;
+  slug: string;
 }
 
-export function RelatedProducts({ productId, categoryId }: RelatedProductsProps) {
+export function RelatedProducts({ slug }: RelatedProductsProps) {
   const { data, isLoading } = useQuery({
-    queryKey: ['related-products', productId, categoryId],
+    queryKey: ['related-products', slug],
     queryFn: async () => {
       // Mock API call - replace with actual endpoint
       const response = await api.get<{ data: Product[] }>('/products', {
-        category: categoryId,
-        exclude: productId,
+        featured: true,
         limit: 8,
       });
       return response;

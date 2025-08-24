@@ -65,7 +65,7 @@ class ProductSeeder extends Seeder
         // Product Images
         ProductImage::create([
             'product_id' => $kaos->id,
-            'path' => '/images/products/kaos-oversize-1.jpg',
+            'path' => '/storage/products/kaos-oversize-1.jpg',
             'alt_text' => 'Kaos Oversize Cotton Combed - Tampak Depan',
             'sort_order' => 1,
             'is_primary' => true,
@@ -73,7 +73,7 @@ class ProductSeeder extends Seeder
 
         ProductImage::create([
             'product_id' => $kaos->id,
-            'path' => '/images/products/kaos-oversize-2.jpg',
+            'path' => '/storage/products/kaos-oversize-2.jpg',
             'alt_text' => 'Kaos Oversize Cotton Combed - Tampak Belakang',
             'sort_order' => 2,
         ]);
@@ -137,7 +137,7 @@ class ProductSeeder extends Seeder
 
             ProductImage::create([
                 'product_id' => $phone->id,
-                'path' => '/images/products/phone-pro-1.jpg',
+                'path' => '/storage/products/phone-pro-1.jpg',
                 'alt_text' => 'Smartphone Android Pro Max - Tampak Depan',
                 'sort_order' => 1,
                 'is_primary' => true,
@@ -203,7 +203,7 @@ class ProductSeeder extends Seeder
 
             ProductImage::create([
                 'product_id' => $sepatu->id,
-                'path' => '/images/products/sneakers-1.jpg',
+                'path' => '/storage/products/sneakers-1.jpg',
                 'alt_text' => 'Sepatu Sneakers Classic',
                 'sort_order' => 1,
                 'is_primary' => true,
