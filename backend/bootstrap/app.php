@@ -3,6 +3,10 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use App\Http\Middleware\CorsMiddleware;
+use App\Http\Middleware\ForceJsonResponse;
+use App\Http\Middleware\LogApiRequests;
+use App\Http\Middleware\RoleMiddleware;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -12,33 +16,42 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        // Middleware aliases
-        $middleware->alias([
-            'role' => \App\Http\Middleware\RoleMiddleware::class,
-            'force.json' => \App\Http\Middleware\ForceJsonResponse::class,
-            'log.api' => \App\Http\Middleware\LogApiRequests::class,
-            'cors' => \App\Http\Middleware\CorsMiddleware::class,
+        // Global middleware
+        $middleware->append([
+            CorsMiddleware::class,
         ]);
 
         // API middleware group
         $middleware->group('api', [
-            \Illuminate\Routing\Middleware\ThrottleRequests::class . ':api',
-            'cors',
-            'force.json',
-            'log.api',
+            ForceJsonResponse::class,
+            CorsMiddleware::class,
+            'throttle:api',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ]);
 
-        // Web middleware group (if needed)
-        $middleware->group('web', [
-            \Illuminate\Cookie\Middleware\EncryptCookies::class,
-            \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+        // Middleware aliases
+        $middleware->alias([
+            'cors' => CorsMiddleware::class,
+            'json.response' => ForceJsonResponse::class,
+            'log.api' => LogApiRequests::class,
+            'role' => RoleMiddleware::class,
+            'jwt.auth' => \Tymon\JWTAuth\Http\Middleware\Authenticate::class,
+            'jwt.refresh' => \Tymon\JWTAuth\Http\Middleware\RefreshToken::class,
+        ]);
+
+        // Priority middleware
+        $middleware->priority([
+            CorsMiddleware::class,
+            ForceJsonResponse::class,
             \Illuminate\Session\Middleware\StartSession::class,
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
-            \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
         ]);
     })
+    ->withProviders([
+        // JWT Service Provider
+        \Tymon\JWTAuth\Providers\LaravelServiceProvider::class,
+    ])
     ->withExceptions(function (Exceptions $exceptions) {
         //
     })

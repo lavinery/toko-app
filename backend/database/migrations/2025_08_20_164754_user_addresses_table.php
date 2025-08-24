@@ -11,19 +11,22 @@ return new class extends Migration
         Schema::create('user_addresses', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->string('label')->default('rumah'); // rumah, kantor, dll
-            $table->string('name');
+            $table->string('label'); // rumah, kantor, dll
+            $table->string('name'); // nama penerima
             $table->string('phone');
-            $table->text('address');
+            $table->text('address'); // alamat lengkap
             $table->string('province');
             $table->string('city');
             $table->string('subdistrict');
             $table->string('postal_code');
-            $table->integer('province_id')->nullable(); // untuk RajaOngkir
-            $table->integer('city_id')->nullable();
-            $table->integer('subdistrict_id')->nullable();
+            $table->integer('province_id'); // untuk RajaOngkir
+            $table->integer('city_id'); // untuk RajaOngkir
+            $table->integer('subdistrict_id'); // untuk RajaOngkir
             $table->boolean('is_default')->default(false);
             $table->timestamps();
+
+            $table->index(['user_id']);
+            $table->index(['is_default']);
         });
     }
 

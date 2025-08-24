@@ -1,6 +1,5 @@
 <?php
 
-// app/Http/Controllers/Api/V1/AuthController.php
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
@@ -18,6 +17,7 @@ use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Carbon\Carbon;
 
 class AuthController extends Controller
 {
@@ -35,10 +35,17 @@ class AuthController extends Controller
                 'password' => Hash::make($request->password),
                 'phone' => $request->phone,
                 'role' => 'customer',
+                'is_active' => true,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
             ]);
 
             // Create cart for new user
-            Cart::create(['user_id' => $user->id]);
+            Cart::create([
+                'user_id' => $user->id,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ]);
 
             // Generate JWT token
             $token = JWTAuth::fromUser($user);
@@ -50,8 +57,14 @@ class AuthController extends Controller
                 'user' => new UserResource($user),
                 'access_token' => $token,
                 'token_type' => 'bearer',
-                'expires_in' => JWTAuth::factory()->getTTL() * 60
+                'expires_in' => config('jwt.ttl') * 60
             ], 201);
+        } catch (ValidationException $e) {
+            DB::rollBack();
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
         } catch (\Exception $e) {
             DB::rollBack();
 
@@ -93,14 +106,17 @@ class AuthController extends Controller
             }
 
             // Update last login
-            $user->update(['last_login_at' => now()]);
+            $user->update([
+                'last_login_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ]);
 
             return response()->json([
                 'message' => 'Login successful',
                 'user' => new UserResource($user),
                 'access_token' => $token,
                 'token_type' => 'bearer',
-                'expires_in' => JWTAuth::factory()->getTTL() * 60
+                'expires_in' => config('jwt.ttl') * 60
             ]);
         } catch (ValidationException $e) {
             return response()->json([
@@ -145,7 +161,7 @@ class AuthController extends Controller
             return response()->json([
                 'access_token' => $token,
                 'token_type' => 'bearer',
-                'expires_in' => JWTAuth::factory()->getTTL() * 60
+                'expires_in' => config('jwt.ttl') * 60
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -186,7 +202,10 @@ class AuthController extends Controller
 
         try {
             $user = Auth::user();
-            $user->update($request->only(['name', 'phone']));
+            $user->update(array_merge(
+                $request->only(['name', 'phone']),
+                ['updated_at' => Carbon::now()]
+            ));
 
             return response()->json([
                 'message' => 'Profile updated successfully',
@@ -217,7 +236,8 @@ class AuthController extends Controller
 
             // Update password
             $user->update([
-                'password' => Hash::make($request->new_password)
+                'password' => Hash::make($request->new_password),
+                'updated_at' => Carbon::now(),
             ]);
 
             return response()->json([
@@ -284,7 +304,8 @@ class AuthController extends Controller
                 $request->only('email', 'password', 'password_confirmation', 'token'),
                 function ($user, $password) {
                     $user->forceFill([
-                        'password' => Hash::make($password)
+                        'password' => Hash::make($password),
+                        'updated_at' => Carbon::now(),
                     ])->save();
                 }
             );

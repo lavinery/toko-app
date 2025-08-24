@@ -14,8 +14,8 @@ class ChangePasswordRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'current_password' => 'required|string',
-            'new_password' => 'required|string|min:8|confirmed|different:current_password',
+            'current_password' => ['required', 'string'],
+            'new_password' => ['required', 'string', 'min:6', 'confirmed'],
         ];
     }
 
@@ -24,9 +24,8 @@ class ChangePasswordRequest extends FormRequest
         return [
             'current_password.required' => 'Password saat ini wajib diisi.',
             'new_password.required' => 'Password baru wajib diisi.',
-            'new_password.min' => 'Password baru minimal 8 karakter.',
-            'new_password.confirmed' => 'Konfirmasi password baru tidak cocok.',
-            'new_password.different' => 'Password baru harus berbeda dengan password saat ini.',
+            'new_password.min' => 'Password baru minimal 6 karakter.',
+            'new_password.confirmed' => 'Konfirmasi password baru tidak sama.',
         ];
     }
 }
